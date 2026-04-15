@@ -27,25 +27,31 @@
         pkgs.btop
         pkgs.ffmpeg
         pkgs.nodejs
+        pkgs.pnpm
         pkgs.ollama
         pkgs.zoxide
         pkgs.uv
         pkgs.delta
+        pkgs.rustc
+        pkgs.cargo
+        pkgs.rustfmt
+        pkgs.clippy
+	pkgs.ttyper
       ];
 
       # 2.5. Shell aliases
       environment.shellAliases = {
         ll = "ls -alh";
         la = "ls -a";
-        ".." = "cd ..";
-        "..." = "cd ../..";
+        ".." = "z ..";
+        "..." = "z ../..";
         update = "sudo darwin-rebuild switch --flake ~/.config/nix-darwin";
       };
 
       # 2.6. Zsh + Oh My Zsh
       programs.zsh.enable = true;
       programs.zsh.interactiveShellInit = ''
-        eval "$(zoxide init zsh)"
+        eval "$(zoxide init zsh --cmd cd)"
       '';
 
       environment.variables.EDITOR = "zed --wait";
@@ -72,6 +78,7 @@
           "/Applications/Zed.app"
           "/Applications/Claude.app"
           "/Applications/cmux.app"
+          "/Applications/Vivaldi.app"
         ];
       };
 
@@ -80,6 +87,13 @@
           enable = true;
           autosuggestion.enable = true;
           syntaxHighlighting.enable = true;
+          shellAliases = {
+            ll = "ls -alh";
+            la = "ls -a";
+            ".." = "z ..";
+            "..." = "z ../..";
+            update = "sudo darwin-rebuild switch --flake ~/.config/nix-darwin";
+          };
           oh-my-zsh = {
             enable = true;
             theme = "agnoster";
@@ -96,7 +110,7 @@
             ];
           };
           initContent = ''
-            eval "$(zoxide init zsh)"
+            eval "$(zoxide init zsh --cmd cd)"
             eval "$(direnv hook zsh)"
           '';
         };
@@ -122,9 +136,18 @@
       homebrew = {
         enable = true;
         onActivation.cleanup = "zap";
+        onActivation.upgrade = true;
         brews = [
 	  "gh"
 	  "direnv"
+	  "gemini-cli"
+          "ripgrep"
+	  "yt-dlp"
+          "fd"
+	  "cloudflared"
+ 	  "cmake"
+          "vapor"
+	  "arm-none-eabi-gcc"
         ];
         casks = [
           "zed"
@@ -147,7 +170,15 @@
           "crossover"
           "appcleaner"
 	  "unnaturalscrollwheels"
+	  "temurin"
           "omnidisksweeper"
+          "vivaldi"
+          "stats"
+	  "ghostty"
+          "gcloud-cli"
+	  "prismlauncher"
+	  "segger-jlink"
+	  "rawtherapee"
         ];
       };
     };
