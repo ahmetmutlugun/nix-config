@@ -20,6 +20,7 @@
 
       # nixpkgs.hostPlatform is now required
       nixpkgs.hostPlatform = "aarch64-darwin"; # Use "x86_64-darwin" if on Intel
+      nixpkgs.config.allowUnfree = true;
 
       # 2. CLI Tools (Nix Native)
       environment.systemPackages = [
@@ -28,7 +29,6 @@
         pkgs.ffmpeg
         pkgs.nodejs
         pkgs.pnpm
-        pkgs.ollama
         pkgs.zoxide
         pkgs.uv
         pkgs.delta
@@ -37,6 +37,8 @@
         pkgs.rustfmt
         pkgs.clippy
 	pkgs.ttyper
+	pkgs.gradle_9
+	pkgs.terraform
       ];
 
       # 2.5. Shell aliases
@@ -45,7 +47,7 @@
         la = "ls -a";
         ".." = "z ..";
         "..." = "z ../..";
-        update = "sudo darwin-rebuild switch --flake ~/.config/nix-darwin";
+        update = "brew update && sudo darwin-rebuild switch --flake ~/.config/nix-darwin";
       };
 
       # 2.6. Zsh + Oh My Zsh
@@ -55,6 +57,7 @@
       '';
 
       environment.variables.EDITOR = "zed --wait";
+      environment.variables.JAVA_HOME = "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home";
 
       users.users.etka = {
         name = "etka";
@@ -92,7 +95,7 @@
             la = "ls -a";
             ".." = "z ..";
             "..." = "z ../..";
-            update = "sudo darwin-rebuild switch --flake ~/.config/nix-darwin";
+            update = "brew update && sudo darwin-rebuild switch --flake ~/.config/nix-darwin";
           };
           oh-my-zsh = {
             enable = true;
@@ -109,9 +112,19 @@
               "aliases"
             ];
           };
-          initContent = ''
+          initExtra = ''
+            export PATH="$HOME/.local/bin:$PATH"
             eval "$(zoxide init zsh --cmd cd)"
             eval "$(direnv hook zsh)"
+            claude-local() {
+              ANTHROPIC_BASE_URL=http://localhost:8001 \
+              ANTHROPIC_API_KEY=dummy \
+              ANTHROPIC_AUTH_TOKEN=dummy \
+              ANTHROPIC_DEFAULT_OPUS_MODEL=my-model \
+              ANTHROPIC_DEFAULT_SONNET_MODEL=my-model \
+              ANTHROPIC_DEFAULT_HAIKU_MODEL=my-model \
+              claude "$@"
+            }
           '';
         };
         programs.delta = {
@@ -137,29 +150,45 @@
         enable = true;
         onActivation.cleanup = "zap";
         onActivation.upgrade = true;
+        taps = [
+          "supabase/tap"
+        ];
         brews = [
 	  "gh"
+	  "go"
+	  "sevenzip"
 	  "direnv"
 	  "gemini-cli"
+	  "pi-coding-agent"
           "ripgrep"
+	  "llama.cpp"
 	  "yt-dlp"
           "fd"
 	  "cloudflared"
  	  "cmake"
+	  "mlx-lm"
+	  "kotlin-language-server"
           "vapor"
 	  "arm-none-eabi-gcc"
+	  "opencode"
+	  "ollama"
+	  "mlx"
+	  "7zip"
+	  "supabase/tap/supabase"
         ];
         casks = [
           "zed"
           "firefox"
           "claude"
-	  "claude-code"
           "cmux"
           "karabiner-elements"
           "scroll-reverser"
           "docker-desktop"
           "betterdisplay"
+	  "steam"
+	  "gcc-arm-embedded"
           "discord"
+	  "visual-studio-code"
           "beekeeper-studio"
           "obsidian"
           "raycast"
@@ -170,8 +199,9 @@
           "crossover"
           "appcleaner"
 	  "unnaturalscrollwheels"
-	  "temurin"
+	  "temurin@21"
           "omnidisksweeper"
+	  "android-commandlinetools"
           "vivaldi"
           "stats"
 	  "ghostty"
@@ -179,6 +209,7 @@
 	  "prismlauncher"
 	  "segger-jlink"
 	  "rawtherapee"
+	  "android-studio"
         ];
       };
     };
